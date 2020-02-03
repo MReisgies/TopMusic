@@ -12,10 +12,6 @@ class Cell extends React.Component{
         <View style={styles.cell}>
           <View style={styles.contentView}>
             <Text style={[styles.whiteText, styles.boldText]}>{this.props.cellItem.name}</Text>
-
-          </View>
-          <View style={styles.accessoryView}>
-          <Text style={[styles.textCenter, styles.whiteText]}></Text>
           </View>
         </View>
     )
@@ -43,7 +39,7 @@ export default class App extends React.Component {
   }
   render() {
 
-    const tableData = Array(50).fill('Hello, World!')
+    const tableData = Array(50).fill('test data')
 
 
     return ( <View style = {styles.container}>
@@ -70,16 +66,12 @@ const styles = StyleSheet.create({
   },
   cell: {
     flexDirection: 'row',
-    height: 75,
+    height: 50,
     marginBottom: 5,
   },
   contentView:{
     flex: 1,
   },
-  accessoryView:{
-    width: 40,
-    justifyContent: 'center'
-  },  
   textCenter: {
     textAlign: 'center'
   },

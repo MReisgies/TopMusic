@@ -66,11 +66,11 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     paddingRight: 15,
     flexDirection: "row",
-    backgroundColor: '#000'
+    backgroundColor: 'black'
   },
   cell: {
     flexDirection: 'row',
-    height: 75,
+    height: 50,
     marginBottom: 5,
   },
   contentView:{
