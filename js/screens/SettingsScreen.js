@@ -1,37 +1,59 @@
-import React, { Component } from 'react';
-import { SectionList, StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+} from 'react-native';
 
-function SettingsItem(props) {
-  return <Text style={styles.item}>{props.text}</Text>;
+class Cell extends React.Component{
+  render(){
+    return(
+        <View style={styles.cell}>
+          <View style={styles.contentView}>
+            <Text style={[styles.whiteText, styles.boldText]}>{this.props.cellItem.name}</Text>
+
+          </View>
+          <View style={styles.accessoryView}>
+          <Text style={[styles.textCenter, styles.whiteText]}></Text>
+          </View>
+        </View>
+    )
+  }
 }
 
-function SettingsHeader(props) {
-  return <Text style={styles.section}>{props.text}</Text>;
-}
+export default class App extends React.Component {
+  fetchTopArtists(){
+    const apiKey = "3f288eed9d9714573089926e8d262e76"
+    const url = `http://ws.audioscrobbler.com/2.0/?method=chart.gettopartists&api_key=${apiKey}&format=json`
 
-export default class SettingsScreen extends Component {
+    return fetch(url)
+    .then(response => response.json())
+  }
+
+  constructor(props){
+    super(props)
+
+    this.state = { artists:[] }
+
+    //fetch api data
+    this.fetchTopArtists()
+    .then(json => { this.setState({artists: json.artists.artist}) 
+    })
+  }
   render() {
-    return (
-      <View style={styles.container}>
-        <SectionList
-          sections={[
-            {
-              title: 'Version',
-              data: [{ key: '1', info: '1.0' }]
-            },
-            {
-              title: 'Impressum',
-              data: [
-                { key: '2', info: 'Beispiel GmbH' },
-                { key: '3', info: 'copyright 2018' }
-              ]
-            }
-          ]}
-          renderItem={({ item }) => <SettingsItem text={item.info} />}
-          renderSectionHeader={({ section }) => (
-            <SettingsHeader text={section.title} />
-          )}
-        />
+
+    const tableData = Array(50).fill('Hello, World!')
+
+
+    return ( <View style = {styles.container}>
+      <FlatList 
+        data={this.state.artists}
+        renderItem={({item}) => (
+          <Cell cellItem={item}/>
+        )}
+        keyExtractor={(_,index) => index.toString()}
+      />
       </View>
     );
   }
@@ -40,19 +62,31 @@ export default class SettingsScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: 30
+    paddingTop: 40,
+    paddingLeft: 15,
+    paddingRight: 15,
+    flexDirection: "row",
+    backgroundColor: '#000'
   },
-  section: {
-    backgroundColor: 'whitesmoke',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'lightgrey',
-    fontSize: 18,
-    padding: 5
+  cell: {
+    flexDirection: 'row',
+    height: 75,
+    marginBottom: 5,
   },
-  item: {
-    color: 'dimgrey',
-    fontSize: 18,
-    padding: 5
+  contentView:{
+    flex: 1,
+  },
+  accessoryView:{
+    width: 40,
+    justifyContent: 'center'
+  },  
+  textCenter: {
+    textAlign: 'center'
+  },
+  whiteText:{
+    color: 'white',
+  },
+  boldText:{
+    fontWeight: 'bold'
   }
 });

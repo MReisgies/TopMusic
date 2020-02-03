@@ -1,68 +1,59 @@
-import React, { Component } from 'react';
+import React from 'react';
 import {
-  ActivityIndicator,
-  FlatList,
   StyleSheet,
   Text,
-  View
+  View,
+  FlatList,
 } from 'react-native';
 
-import FriendListItem from '../components/FriendListItem';
+class Cell extends React.Component{
+  render(){
+    return(
+        <View style={styles.cell}>
+          <View style={styles.contentView}>
+            <Text style={[styles.whiteText, styles.boldText]}>{this.props.cellItem.name}</Text>
+            <Text style={styles.whiteText}>{this.props.cellItem.artist.name}</Text>
+          </View>
+          <View style={styles.accessoryView}>
+          <Text style={[styles.textCenter, styles.whiteText]}></Text>
+          </View>
+        </View>
+    )
+  }
+}
 
-export default class HomeScreen extends Component {
-  static navigationOptions = { header: null };
+export default class App extends React.Component {
+  fetchTopTracks(){
+    const apiKey = "3f288eed9d9714573089926e8d262e76"
+    const url = `http://ws.audioscrobbler.com/2.0/?method=chart.gettoptracks&api_key=${apiKey}&format=json`
 
-  state = { data: [], isLoading: true };
-
-  _fetchData = async () => {
-    try {
-      const response = await fetch('https://randomuser.me/api/?results=20');
-      const responseJSON = await response.json();
-      this.setState({ data: responseJSON.results, isLoading: false });
-    } catch (error) {
-      alert('Keine Internetverbindung');
-      this.setState({ isLoading: false });
-    }
-  };
-
-  _refresh = () => {
-    this.setState({ isLoading: true });
-    this._fetchData();
-  };
-
-  componentDidMount() {
-    this._fetchData();
+    return fetch(url)
+    .then(response => response.json())
   }
 
+  constructor(props){
+    super(props)
+
+    this.state = { tracks:[] }
+
+  /*   Use fetch to get the data from last.fm */
+    this.fetchTopTracks()
+    .then(json => { this.setState({tracks: json.tracks.track}) 
+    })
+  }
   render() {
-    if (this.state.isLoading)
-      return (
-        <View style={styles.container}>
-          <ActivityIndicator size="large" color="darkorange" />
-        </View>
-      );
-    return (
-      <View style={styles.container}>
-        <FlatList
-          data={this.state.data}
-          keyExtractor={item => item.email}
-          renderItem={({ item }) => (
-            <FriendListItem
-              friend={item}
-              onPress={() =>
-                this.props.navigation.navigate('FriendScreen', {
-                  friend: item
-                })
-              }
-            />
-          )}
-          onRefresh={this._refresh}
-          refreshing={this.state.isLoading}
-          ItemSeparatorComponent={() => <View style={styles.listSeparator} />}
-          ListEmptyComponent={() => (
-            <Text style={styles.listEmpty}>Keine Daten geladen</Text>
-          )}
-        />
+
+    const tableData = Array(50).fill('Test fill')
+
+
+    return ( <View style = {styles.container}>
+      <FlatList 
+        data={this.state.tracks}
+        renderItem={({item}) => (
+          <Cell cellItem={item}/>
+        )}
+        keyExtractor={(_,index) => index.toString()}
+      />
       </View>
     );
   }
@@ -71,18 +62,31 @@ export default class HomeScreen extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    backgroundColor: '#fff',
-    paddingTop: 30
+    paddingTop: 40,
+    paddingLeft: 15,
+    paddingRight: 15,
+    flexDirection: "row",
+    backgroundColor: '#000'
   },
-  listSeparator: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: 'lightsalmon',
-    marginVertical: 5
+  cell: {
+    flexDirection: 'row',
+    height: 75,
+    marginBottom: 5,
   },
-  listEmpty: {
-    paddingTop: 100,
-    fontSize: 32,
+  contentView:{
+    flex: 1,
+  },
+  accessoryView:{
+    width: 40,
+    justifyContent: 'center'
+  },  
+  textCenter: {
     textAlign: 'center'
+  },
+  whiteText:{
+    color: 'white',
+  },
+  boldText:{
+    fontWeight: 'bold',
   }
 });
